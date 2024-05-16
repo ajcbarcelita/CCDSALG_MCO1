@@ -66,17 +66,17 @@ int main()
                 selectionSort(records, recordCount); //call selection sort here (sortingalgorithms.c
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
-                // printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted
+                //printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted    <----  
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
             break;
 
             case 3: //merge sort
-
+                printf("This algorithm is pending creation.");
             break;
 
-            case 4: //quick sort
-
+            case 4: //quick sort 
+                printf("This algorithm is pending creation.");
             break;
 
             default:
