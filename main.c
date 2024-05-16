@@ -52,7 +52,13 @@ int main()
         switch (choice)
         {
             case 1: //insertion
-
+                startTime = currentTimeMillis();
+                insertionSort(records, recordCount);
+                endTime = currentTimeMillis();
+                executionTime = endTime - startTime;
+                // printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted
+                printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
+                printf("Time taken: %ld milliseconds.\n", executionTime);
             break;
 
             case 2: //selection sort
