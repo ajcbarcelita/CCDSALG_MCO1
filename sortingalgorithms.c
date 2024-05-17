@@ -71,6 +71,54 @@ void swapStructs (Record *a, Record *b)
     *b = temp;
 }
 
+void merge (Record *arr, int p, int q, int r)
+{   
+    int i, j, k, len1, len2;
+
+    //separates the main array into 2 subarrays
+    len1 = q - p + 1; //length of first array
+    len2 = r - q; //length of second array
+
+    Record tempArr1[len1], tempArr2[len2]; //temp arrays to store the subarrays
+
+    for (i = 0; i < len1; i++) { //copy the elements of first subarray into tempArr1
+        tempArr1[i] = arr[p + i];
+    }
+
+    for (j = 0; j < len2; j++) { //copy the elements of second subarray into tempArr2
+        tempArr2[j] = arr[q + 1 + j];
+    }
+
+    i = 0;
+    j = 0;
+    k = p;
+
+    //this also sorts the elements of the temp arrays while also putting it back in main array
+    while (i < len1 && j < len2) {
+        if (tempArr1[i].idNumber <= tempArr2[j].idNumber) {
+            arr[k] = tempArr1[i];
+            i++;
+        } else {
+            arr[k] = tempArr2[j];
+            j++;
+        }
+        k++;
+    }
+
+    //when either i == len1 or j == len2, the remaining elements are copied into the main array
+    while (i < len1) {
+        arr[k] = tempArr1[i];
+        i++;
+        k++;
+    }
+
+    while (j < len2) {
+        arr[k] = tempArr2[j];
+        j++;
+        k++;
+    }
+}
+
 /*
     pseudo-code for insertion sort is as follows
 */
@@ -83,7 +131,7 @@ void insertionSort(Record *arr, int n)
     for (i = 1; i < n; i++) {
         key = arr[i].idNumber;
         j = i - 1;
-        while (j > 0 && arr[j].idNumber > key) {
+        while (j >= 0 && arr[j].idNumber > key) {
             arr[j + 1] = arr[j];
             j -= 1;
         }
@@ -115,15 +163,19 @@ void selectionSort(Record *arr, int n)
 /*
     pseudo-code for merge sort is as follows
 */
-void mergeSort(Record *arr, int p, int r)
+void mergeSort(Record *arr, int p, int r) //p is the starting index, r is the end index, q is the midpoint
 {
     // TODO: Implement this sorting algorithm here.
 
+    int q;
 
-
-
-
-
+    if (p < r) {
+        q = p + (r - p) / 2;
+        mergeSort(arr, p, q);
+        mergeSort(arr, q + 1, r);
+        merge(arr, p, q, r);
+        return;
+    }
 }
 
 /*

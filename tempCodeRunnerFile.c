@@ -1,0 +1,1 @@
+printRecordsToFile(records, recordCount)
