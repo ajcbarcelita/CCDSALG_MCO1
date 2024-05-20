@@ -85,7 +85,14 @@ int main()
             break;
 
             case 4: //quick sort 
-                printf("This algorithm is pending creation.");
+                startTime = currentTimeMillis();
+                quickSort(records, 0, recordCount - 1);
+                endTime = currentTimeMillis();
+                executionTime = endTime - startTime;
+                printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted
+                printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
+                printf("Time taken: %ld milliseconds.\n", executionTime);
+                fflush(stdout);
             break;
 
             default:

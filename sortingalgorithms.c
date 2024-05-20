@@ -184,12 +184,86 @@ void mergeSort(Record *arr, int p, int r) //p is the starting index, r is the en
 * record structures.
 */
 
+//ITERATIVE QUICKSORT
+
+
+
+
+//getPivot function rearranges so that the ones lower than the pivot are to the left, and the ones higher are to the right.
+int getPivot(Record *arr, int lo, int hi){
+    int mid = lo + (hi - lo) / 2;
+    //median of three method to find the pivot
+    if (arr[mid].idNumber < arr[lo].idNumber) 
+        swapStructs(&arr[lo], &arr[mid]);
+
+    if (arr[hi].idNumber < arr[lo].idNumber) 
+        swapStructs(&arr[lo], &arr[hi]);
+
+    if (arr[hi].idNumber < arr[mid].idNumber) 
+        swapStructs(&arr[mid], &arr[hi]);
+
+
+    swapStructs(&arr[mid], &arr[hi]); //move pivot to the very right/end
+    Record pivot = arr[hi];//store the information of the pivot
+
+
+    int left = lo;
+    int right = hi - 1; //-1 to account for the pivot
+    while (left <= right){//keep swapping until the left is bigger than the right, or the other way around
+        if (arr[left].idNumber <= pivot.idNumber)
+            left++;
+        else if (arr[right].idNumber >= pivot.idNumber)
+            right--;
+        else{//when left is bigger than the right, swap.
+            swapStructs(&arr[left], &arr[right]);
+            left++;
+            right--;
+        }
+
+        
+    }
+    
+    swapStructs(&arr[left], &arr[hi]);//move pivot to its correct location
+    return left; // return the pivot's final position
+
+}
+
+
 /*
     pseudo-code for quick sort is as follows
 */
-void quickSort()
+void quickSort(Record *arr, int lo, int hi)
 {
+    //since were not using recursion, we'll utilize stacks
+    int stack[hi - lo + 1];
+    int top = -1; //initialized to -1, which means empty
+    int pivot; 
 
+    
+    stack[++top] = lo; //lo takes the 0th index aka "pushing" a value to the stack
+    stack[++top] = hi; //hi takes the 1th index
+
+    //process stack elements until empty 
+    while (top >= 0){
+        hi = stack[top--]; // get the value of stack and then decrement, aka "popping" the stack
+        lo = stack[top--]; // its back to lo's stack so gets it and decrements. were back at -1
+
+        //getPivot gets the pivot by finding the median
+        pivot = getPivot(arr, lo, hi);
+
+        //if there are elements on the left that are unsorted...
+        if (pivot - 1 > lo){
+            stack[++top] = lo; //lo is now at 0
+            stack[++top] = pivot - 1; //the new "hi" is now at 1(which is to the left of pivot)
+
+        }
+        //if there are elements on the right that are unsorted...
+        if (pivot + 1 < hi){
+            stack[++top] = pivot + 1; //set the right of the pivot to the new "lo" 
+            stack[++top] = hi; //the hi remains the same
+            
+        }
+    }
 }
 
 
