@@ -8,11 +8,17 @@
 
 int main()
 {
+    int i, index;
     int status, choice;
     int recordCount; //number of records in file
     long startTime, endTime, executionTime;
     pathName path; //path of .txt file to be sorted
 
+    /*
+        This part of the main program asks the user to input the file path of the .txt file that contains the records.
+        If the input is invalid, the program will keep asking the user to input the file path until the file is found.
+        It is assumed that the .txt file is already in the correct format, with the first line being the number of records.
+    */
     do 
     {
         printf("\t=== CHOOSING A FILE ===\n\n");
@@ -29,14 +35,21 @@ int main()
         printf("\n");
 	} while (status == 0);
 
-    //do dynamic memory allocation here
+    /*
+        This part of the main program reads the number of records in the .txt file. It is assumed that the .txt file is already in the correct format,
+        with the first line being the number of records. The number of records is then stored in the variable recordCount, and is used to allocate 
+        memory to store the records in the array sortedRecords (named so because this will be sorted).
+    */
     recordCount = getRecordCount(path);
     printf("Number of records: %d\n", recordCount);
-	Record *records = (Record *)malloc(recordCount * sizeof(Record));
+	Record *sortedRecords = (Record *)malloc(recordCount * sizeof(Record));
+    readFile(sortedRecords, path);
 
-    //file reading and storing to *records
-    readFile(records, path);
-
+    /*
+        This part of the main program asks the user to choose a sorting algorithm to use. The user can choose from either executing insertion sort,
+        selection sort, merge sort, or quick sort. The program will then call the respective sorting algorithm and time how long it takes to sort.
+        It will also store the records from the SORTED array of structs into a .txt file called output.txt for verification purposes.
+    */
     do
     {
         printf("\t=== SORTING ALGORITHMS ==\n\n");
@@ -53,46 +66,42 @@ int main()
         {
             case 1: //insertion
                 startTime = currentTimeMillis();
-                insertionSort(records, recordCount);
+                insertionSort(sortedRecords, recordCount);
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
-                // printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted
+                printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
-                fflush(stdout);
             break;
 
             case 2: //selection sort
                 startTime = currentTimeMillis();
-                selectionSort(records, recordCount); //call selection sort here (sortingalgorithms.c
+                selectionSort(sortedRecords, recordCount); //call selection sort here (sortingalgorithms.c
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
-                printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted  
+                printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted  
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
-                fflush(stdout);
             break;
 
             case 3: //merge sort
                 startTime = currentTimeMillis();
-                mergeSort(records, 0, recordCount - 1);
+                mergeSort(sortedRecords, 0, recordCount - 1);
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
-                printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted
+                printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
-                fflush(stdout);
             break;
 
             case 4: //quick sort 
                 startTime = currentTimeMillis();
-                quickSort(records, 0, recordCount - 1);
+                iterativeQuicksort(sortedRecords, 0, recordCount - 1);
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
-                printRecordsToFile(records, recordCount); //to double check if the array of structs is sorted
+                printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
-                fflush(stdout);
             break;
 
             default:
@@ -101,7 +110,31 @@ int main()
         }
     } while( choice < 1 || choice > 4);
 
-    free(records);
+    /*
+        This part of the main program helps us check if the sorted array is correct (in the sense that
+        it is arranged from least to greatest while also maintaining the connection between the ID number
+        and the name of the person).
+    */
+	Record *unsortedRecords = (Record *)malloc(recordCount * sizeof(Record));
+    readFile(unsortedRecords, path);
+    FILE *fp = fopen("comparison.txt", "w");
+
+    for (i = 0; i < recordCount; i++) {
+        index = binarySearchForRecord(sortedRecords, recordCount, unsortedRecords[i].idNumber, unsortedRecords[i].name);
+        if (index != -1) {
+            fprintf(fp, "Record with ID %d found at index %d.\n", unsortedRecords[i].idNumber, index);
+        } else {
+            fprintf(fp, "Record with ID %d not found.\n", unsortedRecords[i].idNumber);
+        }
+    }
+    fclose(fp);
+
+    //frees the memory allocated for the arrays of structs
+    free(sortedRecords);
+    free(unsortedRecords);
+
+    printf("Please check output.txt for the sorted .txt file.\n");
+    printf("Please check comparison.txt for the comparison between sorted and unsorted arrays using entries from user-specified .txt file at start of program.\n");
 
     return 0;
 }

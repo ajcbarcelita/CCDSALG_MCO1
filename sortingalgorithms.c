@@ -2,6 +2,7 @@
 #define SORTINGALGORITHMS_C
 
 #include <stdio.h>
+#include <string.h>
 #include "record.c"
 
 typedef char pathName[500]; //declaration of a type for the path name of the file
@@ -71,57 +72,63 @@ void swapStructs (Record *a, Record *b)
     *b = temp;
 }
 
-void merge (Record *arr, int p, int q, int r)
-{   
-    int i, j, k, len1, len2;
+/*
+    This function performs a search for an
+    entry in the SORTED array of structs/records.
 
-    //separates the main array into 2 subarrays
-    len1 = q - p + 1; //length of first array
-    len2 = r - q; //length of second array
+    If found, it returns the index of the entry in the sorted array.
+    If not, it returns -1.
+*/
 
-    Record tempArr1[len1], tempArr2[len2]; //temp arrays to store the subarrays
+int binarySearchForRecord(Record *records, int recordCount, int idNumber, char name[])
+{
+    int low = 0, high = recordCount - 1, mid;
+    int found = 0;
 
-    for (i = 0; i < len1; i++) { //copy the elements of first subarray into tempArr1
-        tempArr1[i] = arr[p + i];
-    }
-
-    for (j = 0; j < len2; j++) { //copy the elements of second subarray into tempArr2
-        tempArr2[j] = arr[q + 1 + j];
-    }
-
-    i = 0;
-    j = 0;
-    k = p;
-
-    //this also sorts the elements of the temp arrays while also putting it back in main array
-    while (i < len1 && j < len2) {
-        if (tempArr1[i].idNumber <= tempArr2[j].idNumber) {
-            arr[k] = tempArr1[i];
-            i++;
+    while(!found && low <= high) {
+        mid = (low + high) / 2;
+        if (records[mid].idNumber == idNumber && strcmp(records[mid].name, name) == 0) {
+            found = 1;
+        } else if (records[mid].idNumber < idNumber || (records[mid].idNumber == idNumber && strcmp(records[mid].name, name) < 0)) {
+            low = mid + 1;
         } else {
-            arr[k] = tempArr2[j];
-            j++;
+            high = mid - 1;
         }
-        k++;
     }
 
-    //when either i == len1 or j == len2, the remaining elements are copied into the main array
-    while (i < len1) {
-        arr[k] = tempArr1[i];
-        i++;
-        k++;
-    }
-
-    while (j < len2) {
-        arr[k] = tempArr2[j];
-        j++;
-        k++;
+    if(found) {
+        return mid;
+    } else {
+        return -1;
     }
 }
 
+int returnMin(int a, int b) 
+{
+    if (a < b)
+        return a;
+    else 
+        return b;
+}
+
 /*
-    pseudo-code for insertion sort is as follows
+    Lomuto's partition scheme is used here to find the pivot to be used in quicksort.
 */
+int partition(Record *arr, int lo, int hi){
+    int i, j, pivot;
+
+    pivot = arr[hi].idNumber; //pivot is the last element
+    i = lo - 1; //index of smaller element
+
+    for (j = lo; j <= hi - 1; j++){
+        if (arr[j].idNumber <= pivot){
+            i++;
+            swapStructs(&arr[i], &arr[j]);
+        }
+    }
+    swapStructs(&arr[i + 1], &arr[hi]);
+    return (i + 1);
+}
 
 void insertionSort(Record *arr, int n)
 {
@@ -139,9 +146,6 @@ void insertionSort(Record *arr, int n)
     }
 }
 
-/*
-    pseudo-code for selection sort is as follows
-*/
 void selectionSort(Record *arr, int n)
 {
     // TODO: Implement this sorting algorithm here.
@@ -160,86 +164,21 @@ void selectionSort(Record *arr, int n)
     }
 }
 
-/*
-    pseudo-code for merge sort is as follows
-*/
-void mergeSort(Record *arr, int p, int r) //p is the starting index, r is the end index, q is the midpoint
-{
-    // TODO: Implement this sorting algorithm here.
-
-    int q;
-
-    if (p < r) {
-        q = p + (r - p) / 2;
-        mergeSort(arr, p, q);
-        mergeSort(arr, q + 1, r);
-        merge(arr, p, q, r);
-        return;
-    }
-}
 
 /*
 * Define AT LEAST ONE more sorting algorithm here, apart from the
 * ones given above. Make sure that the method accepts an array of
 * record structures.
 */
+//will probably add more notes here as to why a stack is used
 
-//ITERATIVE QUICKSORT
-
-
-
-
-//getPivot function rearranges so that the ones lower than the pivot are to the left, and the ones higher are to the right.
-int getPivot(Record *arr, int lo, int hi){
-    int mid = lo + (hi - lo) / 2;
-    //median of three method to find the pivot
-    if (arr[mid].idNumber < arr[lo].idNumber) 
-        swapStructs(&arr[lo], &arr[mid]);
-
-    if (arr[hi].idNumber < arr[lo].idNumber) 
-        swapStructs(&arr[lo], &arr[hi]);
-
-    if (arr[hi].idNumber < arr[mid].idNumber) 
-        swapStructs(&arr[mid], &arr[hi]);
-
-
-    swapStructs(&arr[mid], &arr[hi]); //move pivot to the very right/end
-    Record pivot = arr[hi];//store the information of the pivot
-
-
-    int left = lo;
-    int right = hi - 1; //-1 to account for the pivot
-    while (left <= right){//keep swapping until the left is bigger than the right, or the other way around
-        if (arr[left].idNumber <= pivot.idNumber)
-            left++;
-        else if (arr[right].idNumber >= pivot.idNumber)
-            right--;
-        else{//when left is bigger than the right, swap.
-            swapStructs(&arr[left], &arr[right]);
-            left++;
-            right--;
-        }
-
-        
-    }
-    
-    swapStructs(&arr[left], &arr[hi]);//move pivot to its correct location
-    return left; // return the pivot's final position
-
-}
-
-
-/*
-    pseudo-code for quick sort is as follows
-*/
-void quickSort(Record *arr, int lo, int hi)
+void iterativeQuicksort(Record *arr, int lo, int hi)
 {
     //since were not using recursion, we'll utilize stacks
     int stack[hi - lo + 1];
     int top = -1; //initialized to -1, which means empty
     int pivot; 
 
-    
     stack[++top] = lo; //lo takes the 0th index aka "pushing" a value to the stack
     stack[++top] = hi; //hi takes the 1th index
 
@@ -249,7 +188,7 @@ void quickSort(Record *arr, int lo, int hi)
         lo = stack[top--]; // its back to lo's stack so gets it and decrements. were back at -1
 
         //getPivot gets the pivot by finding the median
-        pivot = getPivot(arr, lo, hi);
+        pivot = partition(arr, lo, hi);
 
         //if there are elements on the left that are unsorted...
         if (pivot - 1 > lo){
@@ -261,10 +200,8 @@ void quickSort(Record *arr, int lo, int hi)
         if (pivot + 1 < hi){
             stack[++top] = pivot + 1; //set the right of the pivot to the new "lo" 
             stack[++top] = hi; //the hi remains the same
-            
         }
     }
 }
-
 
 #endif
