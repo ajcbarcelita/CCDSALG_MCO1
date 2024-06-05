@@ -86,7 +86,7 @@ int main()
 
             case 3: //merge sort
                 startTime = currentTimeMillis();
-                mergeSort(sortedRecords, 0, recordCount - 1);
+                iterativeMergeSort(sortedRecords, recordCount); //call merge sort here (sortingalgorithms.c)
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
                 printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
@@ -115,16 +115,19 @@ int main()
         it is arranged from least to greatest while also maintaining the connection between the ID number
         and the name of the person).
     */
+
+    //allocate memory (again) for the unsorted array of structs (done AFTER sorting the array of structs earlier)
 	Record *unsortedRecords = (Record *)malloc(recordCount * sizeof(Record));
     readFile(unsortedRecords, path);
     FILE *fp = fopen("comparison.txt", "w");
 
+    //compare the sorted array of structs with the unsorted array of structs
     for (i = 0; i < recordCount; i++) {
         index = binarySearchForRecord(sortedRecords, recordCount, unsortedRecords[i].idNumber, unsortedRecords[i].name);
         if (index != -1) {
-            fprintf(fp, "Record with ID %d found at index %d.\n", unsortedRecords[i].idNumber, index);
+            fprintf(fp, "Record with ID %d and name %s found at index %d.\n", unsortedRecords[i].idNumber, unsortedRecords[i].name, index);
         } else {
-            fprintf(fp, "Record with ID %d not found.\n", unsortedRecords[i].idNumber);
+            fprintf(fp, "Record with ID %d and name %s not found.\n", unsortedRecords[i].idNumber, unsortedRecords[i].name);
         }
     }
     fclose(fp);

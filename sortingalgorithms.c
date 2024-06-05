@@ -103,31 +103,96 @@ int binarySearchForRecord(Record *records, int recordCount, int idNumber, char n
     }
 }
 
-int returnMin(int a, int b) 
+/*
+
+*/
+int min (int x, int y)
 {
-    if (a < b)
-        return a;
+    if (x < y)
+        return x;
     else 
-        return b;
+        return y;
 }
 
 /*
-    Lomuto's partition scheme is used here to find the pivot to be used in quicksort.
+
+*/
+//note declaring arr[i]like this allocates memory on STACK, but using malloc allocates memory on HEAP
+void merge (Record *arr, int lo, int mid, int hi)
+{
+    int i, j, k;
+    int sizeArr1 = mid - lo + 1;
+    int sizeArr2 = hi - mid;
+
+    Record *arr1 = (Record *)malloc(sizeArr1 * sizeof(Record));
+    Record *arr2 = (Record *)malloc(sizeArr2 * sizeof(Record));
+
+    for (i = 0; i < sizeArr1; i++) {
+        arr1[i] = arr[lo + i];
+    }
+
+    for (j = 0; j < sizeArr2; j++) {
+        arr2[j] = arr[mid + 1 + j];
+    }
+
+    i = 0;
+    j = 0;
+    k = lo;
+
+    while (i < sizeArr1 && j < sizeArr2) {
+        if (arr1[i].idNumber <= arr2[j].idNumber) {
+            arr[k] = arr1[i];
+            i++;
+        } else {
+            arr[k] = arr2[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < sizeArr1) {
+        arr[k] = arr1[i];
+        i++;
+        k++;
+    }
+
+    while (j < sizeArr2) {
+        arr[k] = arr2[j];
+        j++;
+        k++;
+    }
+
+    free(arr1);
+    free(arr2);
+}
+
+/*
+    Hoare's partition scheme is used here to find the pivot to be used in quicksort.
 */
 int partition(Record *arr, int lo, int hi){
     int i, j, pivot;
 
-    pivot = arr[hi].idNumber; //pivot is the last element
-    i = lo - 1; //index of smaller element
+    pivot = arr[lo].idNumber; //pivot is the last element
+    i = lo - 1; //i is the first element
+    j = hi + 1; //j is the last element
 
-    for (j = lo; j <= hi - 1; j++){
-        if (arr[j].idNumber <= pivot){
+    while(1) {
+        do
+        {
             i++;
-            swapStructs(&arr[i], &arr[j]);
+        } while (arr[i].idNumber < pivot);
+
+        do
+        {
+            j--;
+        } while (arr[j].idNumber > pivot);
+
+        if (i >= j) {
+            return j;
         }
+
+        swapStructs(&arr[i], &arr[j]);
     }
-    swapStructs(&arr[i + 1], &arr[hi]);
-    return (i + 1);
 }
 
 void insertionSort(Record *arr, int n)
@@ -164,6 +229,21 @@ void selectionSort(Record *arr, int n)
     }
 }
 
+/*
+
+*/
+void iterativeMergeSort(Record *arr, int n)
+{
+    int mid, currentSize, leftStart, rightEnd;
+
+    for (currentSize = 1; currentSize <= n - 1; currentSize = 2 * currentSize) {
+        for (leftStart = 0; leftStart < n - 1; leftStart += 2 * currentSize) {
+            mid = min(leftStart + currentSize - 1, n - 1);
+            rightEnd = min(leftStart + 2 * currentSize - 1, n - 1);
+            merge(arr, leftStart, mid, rightEnd);
+        }
+    }
+}
 
 /*
 * Define AT LEAST ONE more sorting algorithm here, apart from the
