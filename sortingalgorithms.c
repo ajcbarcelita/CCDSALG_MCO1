@@ -2,6 +2,7 @@
 #define SORTINGALGORITHMS_C
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "record.c"
 
@@ -48,6 +49,7 @@ int getRecordCount(pathName path)
     This function prints out the contents of the array of structs/records into a .txt file called output.txt
     Helps ensure that the sorting algorithms are working correctly. For testing purposes.
 */
+
 void printRecordsToFile(Record *records, int recordCount) {
     FILE *file = fopen("output.txt", "w"); //opens file in write mode, if output.txt does not exist, it will be created
     if (file == NULL) {
@@ -117,7 +119,7 @@ int min (int x, int y)
 /*
 
 */
-//note declaring arr[i]like this allocates memory on STACK, but using malloc allocates memory on HEAP
+//note declaring arr[i] like this allocates memory on STACK, but using malloc allocates memory on HEAP
 void merge (Record *arr, int lo, int mid, int hi)
 {
     int i, j, k;
@@ -198,16 +200,17 @@ int partition(Record *arr, int lo, int hi){
 void insertionSort(Record *arr, int n)
 {
     // TODO: Implement this sorting algorithm here.
-    int i, j, key;
+    int i, j;
+    Record key;
 
     for (i = 1; i < n; i++) {
-        key = arr[i].idNumber;
+        key = arr[i];
         j = i - 1;
-        while (j >= 0 && arr[j].idNumber > key) {
+        while (j >= 0 && arr[j].idNumber > key.idNumber) {
             arr[j + 1] = arr[j];
             j -= 1;
         }
-        arr[j + 1].idNumber = key;
+        arr[j + 1] = key;
     }
 }
 
@@ -250,6 +253,7 @@ void iterativeMergeSort(Record *arr, int n)
 * ones given above. Make sure that the method accepts an array of
 * record structures.
 */
+
 //will probably add more notes here as to why a stack is used
 
 void iterativeQuicksort(Record *arr, int lo, int hi)
