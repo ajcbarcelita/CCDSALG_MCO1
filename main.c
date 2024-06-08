@@ -96,7 +96,7 @@ int main()
 
             case 4: //quick sort 
                 startTime = currentTimeMillis();
-                iterativeQuicksort(sortedRecords, 0, recordCount - 1);
+                iterativeQuickSort(sortedRecords, 0, recordCount - 1);
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
                 printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted

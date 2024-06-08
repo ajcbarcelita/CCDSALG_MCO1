@@ -169,32 +169,46 @@ void merge (Record *arr, int lo, int mid, int hi)
 }
 
 /*
-    Hoare's partition scheme is used here to find the pivot to be used in quicksort.
+    getPivot function rearranges using the Median of Three method so that the ones lower than the pivot are to the left, and the ones higher are to the right.
+    it is used in the iterativeQuickSort function
 */
-int partition(Record *arr, int lo, int hi){
-    int i, j, pivot;
 
-    pivot = arr[lo].idNumber; //pivot is the last element
-    i = lo - 1; //i is the first element
-    j = hi + 1; //j is the last element
+int getPivot(Record *arr, int lo, int hi){
+    int mid = lo + (hi - lo) / 2;
+    //median of three method to find the pivot
+    if (arr[mid].idNumber < arr[lo].idNumber) 
+        swapStructs(&arr[lo], &arr[mid]);
 
-    while(1) {
-        do
-        {
-            i++;
-        } while (arr[i].idNumber < pivot);
+    if (arr[hi].idNumber < arr[lo].idNumber) 
+        swapStructs(&arr[lo], &arr[hi]);
 
-        do
-        {
-            j--;
-        } while (arr[j].idNumber > pivot);
+    if (arr[hi].idNumber < arr[mid].idNumber) 
+        swapStructs(&arr[mid], &arr[hi]);
 
-        if (i >= j) {
-            return j;
+
+    swapStructs(&arr[mid], &arr[hi]); //move pivot to the very right/end
+    Record pivot = arr[hi];//store the information of the pivot
+
+
+    int left = lo;
+    int right = hi - 1; //-1 to account for the pivot
+    while (left <= right){//keep swapping until the left is bigger than the right, or the other way around
+        if (arr[left].idNumber <= pivot.idNumber)
+            left++;
+        else if (arr[right].idNumber >= pivot.idNumber)
+            right--;
+        else{//when left is bigger than the right, swap.
+            swapStructs(&arr[left], &arr[right]);
+            left++;
+            right--;
         }
 
-        swapStructs(&arr[i], &arr[j]);
+        
     }
+    
+    swapStructs(&arr[left], &arr[hi]);//move pivot to its correct location
+    return left; // return the pivot's final position
+
 }
 
 void insertionSort(Record *arr, int n)
@@ -256,7 +270,7 @@ void iterativeMergeSort(Record *arr, int n)
 
 //will probably add more notes here as to why a stack is used
 
-void iterativeQuicksort(Record *arr, int lo, int hi)
+void iterativeQuickSort(Record *arr, int lo, int hi)
 {
     //since were not using recursion, we'll utilize stacks
     int stack[hi - lo + 1];
@@ -272,7 +286,7 @@ void iterativeQuicksort(Record *arr, int lo, int hi)
         lo = stack[top--]; // its back to lo's stack so gets it and decrements. were back at -1
 
         //getPivot gets the pivot by finding the median
-        pivot = partition(arr, lo, hi);
+        pivot = getPivot(arr, lo, hi);
 
         //if there are elements on the left that are unsorted...
         if (pivot - 1 > lo){
