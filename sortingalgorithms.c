@@ -67,11 +67,11 @@ void printRecordsToFile(Record *records, int recordCount) {
 /*
     This function allows for the swapping of different elements in an array of structs/records.
 */
-void swapStructs (Record *a, Record *b)
+void swapStructs (Record *a, Record *b) //T = 11
 {
-    Record temp = *a;
-    *a = *b;
-    *b = temp;
+    Record temp = *a; 
+    *a = *b; 
+    *b = temp; 
 }
 
 /*
@@ -173,7 +173,7 @@ void merge (Record *arr, int lo, int mid, int hi)
     it is used in the iterativeQuickSort function
 */
 
-int getPivot(Record *arr, int lo, int hi){
+int getPivot(Record *arr, int lo, int hi, long long int *stepCount){
     int mid = lo + (hi - lo) / 2;
     //median of three method to find the pivot
     if (arr[mid].idNumber < arr[lo].idNumber) 
@@ -202,54 +202,65 @@ int getPivot(Record *arr, int lo, int hi){
             left++;
             right--;
         }
-
-        
     }
     
     swapStructs(&arr[left], &arr[hi]);//move pivot to its correct location
     return left; // return the pivot's final position
-
 }
 
-void insertionSort(Record *arr, int n)
+void insertionSort(Record *arr, int n, long long int *stepCount)
 {
     // TODO: Implement this sorting algorithm here.
-    int i, j;
+    int i, j; 
     Record key;
+    (*stepCount) += 4; //declares i and j of int data type, and temp of Record data type, initialie i to 1
 
     for (i = 1; i < n; i++) {
-        key = arr[i];
+        (*stepCount)++; //accounts for i < n check in every iteration
+        key = arr[i]; 
         j = i - 1;
+        (*stepCount) += 5; //initializes key to arr[i], and j to i - 1
         while (j >= 0 && arr[j].idNumber > key.idNumber) {
             arr[j + 1] = arr[j];
             j -= 1;
+            (*stepCount) += 9; //accounts for the while loop and contents
         }
-        arr[j + 1] = key;
+        (*stepCount)++; //one last check for while loop
+        arr[j + 1] = key; 
+        (*stepCount) += 3;
     }
+    (*stepCount)++; //last check of for loop
 }
 
-void selectionSort(Record *arr, int n)
+void selectionSort(Record *arr, int n, long long int *stepCount)
 {
     // TODO: Implement this sorting algorithm here.
     int i, j, minIndex;
+    (*stepCount) += 3; //declares i, j, and minIndex of int data type
 
     for (i = 0; i < n - 1; i++) {
         minIndex = i;
+        (*stepCount)++;
         for (j = i + 1; j < n; j++) {
             if (arr[j].idNumber < arr[minIndex].idNumber) {
                 minIndex = j;
+                (*stepCount) += 2;
             }
+            (*stepCount)++;
         }
+        (*stepCount)++;
         if (minIndex != i) {
             swapStructs(&arr[minIndex], &arr[i]);
         }
+        (*stepCount)++;
     }
+    (*stepCount)++;
 }
 
 /*
 
 */
-void iterativeMergeSort(Record *arr, int n)
+void iterativeMergeSort(Record *arr, int n, long long int *stepCount)
 {
     int mid, currentSize, leftStart, rightEnd;
 
@@ -270,7 +281,7 @@ void iterativeMergeSort(Record *arr, int n)
 
 //will probably add more notes here as to why a stack is used
 
-void iterativeQuickSort(Record *arr, int lo, int hi)
+void iterativeQuickSort(Record *arr, int lo, int hi, long long int *stepCount)
 {
     //since were not using recursion, we'll utilize stacks
     int stack[hi - lo + 1];
@@ -286,7 +297,7 @@ void iterativeQuickSort(Record *arr, int lo, int hi)
         lo = stack[top--]; // its back to lo's stack so gets it and decrements. were back at -1
 
         //getPivot gets the pivot by finding the median
-        pivot = getPivot(arr, lo, hi);
+        pivot = getPivot(arr, lo, hi, stepCount);
 
         //if there are elements on the left that are unsorted...
         if (pivot - 1 > lo){

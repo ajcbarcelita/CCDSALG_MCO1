@@ -13,6 +13,7 @@ int main()
     int recordCount; //number of records in file
     long startTime, endTime, executionTime;
     pathName path; //path of .txt file to be sorted
+    long long int stepCount;
 
     /*
         This part of the main program asks the user to input the file path of the .txt file that contains the records.
@@ -65,40 +66,51 @@ int main()
         switch (choice)
         {
             case 1: //insertion
+                stepCount = 0;
                 startTime = currentTimeMillis();
-                insertionSort(sortedRecords, recordCount);
+                insertionSort(sortedRecords, recordCount, &stepCount);
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
+                printf("\nNumber of steps: %lld\n", stepCount);
+                fflush(stdout);
                 printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
-                printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
+                printf("Start Time: %ld ms\nEnd Time: %ld ms\n", startTime, endTime);
+                fflush(stdout);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
+                fflush(stdout);
             break;
 
             case 2: //selection sort
+                stepCount = 0;
                 startTime = currentTimeMillis();
-                selectionSort(sortedRecords, recordCount); //call selection sort here (sortingalgorithms.c
+                selectionSort(sortedRecords, recordCount, &stepCount); //call selection sort here (sortingalgorithms.c
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
+                printf("\nNumber of steps: %lld\n", stepCount);
                 printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted  
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
             break;
 
             case 3: //merge sort
+                stepCount = 0;
                 startTime = currentTimeMillis();
-                iterativeMergeSort(sortedRecords, recordCount); //call merge sort here (sortingalgorithms.c)
+                iterativeMergeSort(sortedRecords, recordCount, &stepCount); //call merge sort here (sortingalgorithms.c)
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
+                printf("\nNumber of steps: %lld\n", stepCount);
                 printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
             break;
 
             case 4: //quick sort 
+                stepCount = 0;
                 startTime = currentTimeMillis();
-                iterativeQuickSort(sortedRecords, 0, recordCount - 1);
+                iterativeQuickSort(sortedRecords, 0, recordCount - 1, &stepCount);
                 endTime = currentTimeMillis();
                 executionTime = endTime - startTime;
+                printf("\nNumber of steps: %lld\n", stepCount);
                 printRecordsToFile(sortedRecords, recordCount); //to double check if the array of structs is sorted
                 printf("Start Time: %ld ms\n End Time: %ld ms\n", startTime, endTime);
                 printf("Time taken: %ld milliseconds.\n", executionTime);
